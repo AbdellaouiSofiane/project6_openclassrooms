@@ -1,0 +1,141 @@
+/* global styling */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-size: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+
+/* navbar */
+
+#navbar {
+  display: flex;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  align-items: center;
+  background-color: rgb(20, 20, 20);
+}
+
+.navbar-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+#navbar .navbar-list:first-child {
+  width: 100%;
+}
+  
+#navbar .navbar-list:last-child {
+  display: none;
+}
+
+.navbar-item {
+  text-align: center;
+}
+
+.navbar-link {
+  display: block;
+  text-decoration: none;
+  font-size: 1em;
+  color: white;
+  padding: 1em 0;
+}
+
+.navbar-brand {
+  text-decoration: none;
+  font-size: 1.5em;
+  color: rgb(229, 9, 20);
+}
+
+
+@media only screen and (min-width: 768px) {
+  #navbar .navbar-list:first-child {
+    float: left;
+    width: 20%;
+  }
+  #navbar .navbar-list:last-child {
+    display: block;
+  }
+  #navbar .navbar-list:last-child .navbar-item{
+    display: inline-block;
+    padding: 0em 1em;
+  }
+}
+
+
+/* Highlight section */
+
+#highlight {
+  display: flex;
+  padding: 1em 1em;
+  background-color: lightcoral;
+}
+
+@media only screen and (max-width: 768px) {
+  #highlight {
+    display: block;
+  }
+}
+
+.highlight-img {
+  margin: 1em;
+}
+
+.highlight-button {
+    border-radius: 4px;
+    align-items: center;
+    background-color: white;
+    font-size: 1em;
+    padding: 0.1em 1em;
+    border-color: black;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.highlight-content {
+  max-width: 300px; 
+  margin: 1em;
+}
+
+
+/* Categories section */
+
+#categories {
+  text-align: center;
+  padding: 0em 2em;
+  margin: auto;
+}
+
+.category-list {
+  display: flex;
+  justify-content: space-evenly;
+  list-style-type: none;
+  overflow:  hidden;
+  margin: 0;
+  padding: 0;
+  width: 80%;
+}
+
+
+/* Carousel  */
+
+.carousel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.slide {
+  display: none;
+}
+
+.category-list .visible {
+  display: list-item;
+}

@@ -1,104 +1,35 @@
-(function() {
-
-const base_url = "http://localhost:8000/api/v1/titles/?"
-
-const category_1 = "Action"
-const category_2 = "Adventure"
-const category_3 = "Comedy"
-const category_list = [category_1, category_2, category_3]
-
-const max_movies_by_category = 7
-const max_visible_by_category = 4
-
-const modal = document.getElementById("myModal");
-var close = document.getElementsByClassName("close")[0];
+// Constants
+const BASE_URL = "http://localhost:8000/api/v1/titles/?"
+const FIRST_CATEGORY_NAME = "Action"
+const SECOND_CATEGORY_NAME = "Adventure"
+const THIRD_CATEGORY_NAME = "Comedy"
+const CATEGORY_NAME_LIST = [
+	FIRST_CATEGORY_NAME,
+	SECOND_CATEGORY_NAME,
+	THIRD_CATEGORY_NAME
+]
+const NB_MOVIES_BY_CATEGORY = 7
+const NB_VISIBLE_BY_CATEGORY = 4
 
 
-function append_movie_node(parent, key, index) {
+// create html list element with desired attribute
+function get_movie_child_node(data) {
 	const movie_element = document.createElement("li");
-	movie_element.setAttribute("class", "slide");
-	if (index < max_visible_by_category) {
-		movie_element.classList.add('visible')
-	}
-
 	const movie_link = document.createElement("a");
-	movie_link.setAttribute("data_url", key.url);
-	movie_link.setAttribute("class", "btn");
-
 	const movie_img = document.createElement("img");
-	movie_img.setAttribute("src", key.image_url);
-	movie_img.setAttribute("alt", key.title);
+
+	movie_element.setAttribute("class", "slide");
+	movie_img.setAttribute("src", data.image_url);
+	movie_img.setAttribute("alt", data.title);
 
 	movie_link.appendChild(movie_img);
 	movie_element.appendChild(movie_link);
-	parent.appendChild(movie_element);
 
-	movie_link.addEventListener('click', function() {
-		display_modal(key.url)
-	})
+	return movie_element
 };
 
 
-function custom_fetch(url, param, node, page=1, nb_element=0) {
-	param.page = page
-	fetch(url + new URLSearchParams(param))
-		.then(response => response.json())
-		.then(data => {
-			for (key of data.results) {
-				if (nb_element < max_movies_by_category) {
-					append_movie_node(node, key, nb_element)
-					nb_element++
-				} else {
-					break
-				}
-			}
-			if (nb_element < max_movies_by_category) {
-				page++
-				custom_fetch(url, param, node, page, nb_element)
-			}
-		});
-};
-
-// highlight section
-fetch(base_url + new URLSearchParams({
-	sort_by: "-imdb_score"
-}))
-	.then(response => response.json())
-	.then(data => {
-		document.getElementById('highlight-title-text').innerHTML = data.results[0].title;
-		document.getElementById('highlight-img').setAttribute("src", data.results[0].image_url);
-		fetch(data.results[0].url)
-			.then(response => response.json())
-			.then(data => {
-				document.getElementById('highlight-description-text').innerHTML = data.long_description;
-		});
-	});
-
-// top rated
-top_rated = document.getElementById('top-rated-list')
-custom_fetch(base_url, {sort_by: "-imdb_score"}, top_rated)
-
-// categories 
-var i = 1
-for (category of category_list) {
-	document.getElementById(`catagory-${i}-title`).innerHTML = category
-	node_list = document.getElementById(`catagory-${i}-list`)
-	custom_fetch(base_url, {genre: category, sort_by: "-imdb_score"}, node_list)
-	i++
-}
-
-// hide modal when user clicks the close button
-close.onclick = function() {
-  modal.style.display = "none";
-}
-
-// Hide modal when user clicks the close button anywhere outside of the modal
-window.onclick = function(event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
-  }
-}
-
+// populate modal with fetched data
 function display_modal(url) {
 	fetch(url)
 		.then(response => response.json())
@@ -119,4 +50,44 @@ function display_modal(url) {
 }
 
 
-})()
+// Append the required number of movies' elements to category div
+function append_movies_to_category(get_param, parent_node, page=1, nb_fetched=0) {
+	get_param.page = page
+	fetch(BASE_URL + new URLSearchParams(get_param))
+		.then(response => {
+			if (response.ok) {
+				return response.json();
+			}
+			throw new Error("Can't fetch data from server");
+		})
+		.then(data => {
+			for (item of data.results) {
+				if (nb_fetched < NB_MOVIES_BY_CATEGORY) {
+
+					// get movie node
+					movie_node = get_movie_child_node(item, nb_fetched)
+
+					// display modal on click
+					movie_node.addEventListener('click', function() {
+						display_modal(item.url)
+					})
+
+					// apend movie node element
+					parent_node.appendChild(movie_node)
+
+					// set movie node visibility
+					if (nb_fetched < NB_VISIBLE_BY_CATEGORY) {
+						movie_node.classList.add('visible')
+					}
+					nb_fetched++
+				} else {
+					return
+				}
+			}
+			page++
+			append_movies_to_category(get_param, parent_node, page, nb_fetched)
+		})
+		.catch(error => {
+			console.log(error)
+		});
+};

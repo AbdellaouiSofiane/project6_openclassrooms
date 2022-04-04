@@ -21,6 +21,7 @@ function get_movie_child_node(data) {
 	movie_element.setAttribute("class", "slide");
 	movie_img.setAttribute("src", data.image_url);
 	movie_img.setAttribute("alt", data.title);
+	movie_img.setAttribute("data-url", data.url);
 
 	movie_link.appendChild(movie_img);
 	movie_element.appendChild(movie_link);
@@ -65,11 +66,12 @@ function append_movies_to_category(get_param, parent_node, page=1, nb_fetched=0)
 				if (nb_fetched < NB_MOVIES_BY_CATEGORY) {
 
 					// get movie node
-					movie_node = get_movie_child_node(item, nb_fetched)
+					var movie_node = get_movie_child_node(item, nb_fetched)
 
 					// display modal on click
-					movie_node.addEventListener('click', function() {
-						display_modal(item.url)
+					movie_node.addEventListener('click', function(e) {
+						var url = e.target.getAttribute('data-url')
+						display_modal(url)
 					})
 
 					// apend movie node element
